@@ -96,6 +96,10 @@ const allowedChannels = new Set([
   'webauthn:get',
   'webauthn:pin-submit',
   'webauthn:pin-cancel',
+
+  // Renderer-side error forwarding (registered in app/browser/preload.js)
+  'unhandled-rejection',
+  'window-error'
 ]);
 
 const DANGEROUS_PROPS = new Set(['__proto__', 'constructor', 'prototype']);
