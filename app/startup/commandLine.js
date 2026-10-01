@@ -84,6 +84,21 @@ class CommandLineManager {
     }
 
     this.addElectronCLIFlags(config);
+
+    // #3023: Flatpak builds on current Electron render light even when the
+    // portal color-scheme is dark and Teams follows the OS. Disabling
+    // UsePortalAccentColor restores that detection. It also drops portal
+    // accent-color integration, so reevaluate this on a future Electron
+    // upgrade. Merge into the final disable-features value so a configured
+    // electronCLIFlags entry cannot replace the workaround.
+    if (process.platform === "linux" && process.env.FLATPAK_ID) {
+      const existing = app.commandLine.getSwitchValue("disable-features") || "";
+      const features = existing.split(",").filter((feature) => feature.trim() !== "");
+      if (!features.some((feature) => feature.trim() === "UsePortalAccentColor")) {
+        features.push("UsePortalAccentColor");
+        app.commandLine.appendSwitch("disable-features", features.join(","));
+      }
+    }
   }
 
   // macOS performance optimizations for Apple Silicon and Intel Macs.
